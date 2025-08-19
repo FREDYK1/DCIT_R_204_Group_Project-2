@@ -1,0 +1,16 @@
+id,name,latitude,longitude,description,isLandmark
+main_gate,Main Gate,5.650800,-0.187000,University main entrance,true
+great_hall,Great Hall,5.652000,-0.185000,Main assembly hall,true
+library,Balme Library,5.652500,-0.184500,Main university library,true
+comp_sci,Computer Science Department,5.653000,-0.184000,DCIT Department building,true
+night_market,Night Market,5.651500,-0.186000,Food and shopping area,true
+commonwealth,Commonwealth Hall,5.654000,-0.182000,Traditional residential hall,true
+legon,Legon Hall,5.654500,-0.182500,Traditional residential hall,true
+sports,Sports Complex,5.655000,-0.183000,Main sports facilities,true
+medical,Medical Center,5.653500,-0.183500,University health services,true
+bank,GCB Bank,5.651800,-0.185500,Ghana Commercial Bank,true
+src,SRC Building,5.652200,-0.184800,Student Representative Council,true
+pentagon,Pentagon,5.652800,-0.183800,Administrative building,true
+n_block,N-Block,5.653200,-0.184200,Academic building,false
+jean_nelson,Jean Nelson Aka Hall,5.654800,-0.181800,Residential hall,true
+unity_hall,Unity Hall,5.655200,-0.182200,Residential hall,true

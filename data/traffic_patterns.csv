@@ -1,0 +1,8 @@
+route_id,time_period,multiplier,description
+main_gate_great_hall,07:00-09:00,1.3,Morning rush hour
+main_gate_great_hall,12:00-14:00,1.2,Lunch time traffic
+main_gate_great_hall,16:00-18:00,1.4,Evening rush hour
+night_market_great_hall,12:00-14:00,1.8,Lunch rush
+night_market_great_hall,18:00-20:00,1.6,Dinner rush
+great_hall_commonwealth,07:00-08:00,1.2,Morning departure
+great_hall_commonwealth,22:00-23:00,1.1,Night return

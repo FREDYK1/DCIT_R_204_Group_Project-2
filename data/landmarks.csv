@@ -1,0 +1,11 @@
+id,name,category,description,locationId,importance
+lm_main_gate,Main Gate,Transport,Main entrance to the university,main_gate,1.00
+lm_great_hall,Great Hall,Academic,Main assembly and graduation hall,great_hall,0.90
+lm_library,Balme Library,Academic,Main university library with study areas,library,0.80
+lm_comp_sci,Computer Science Department,Academic,DCIT Department building,comp_sci,0.70
+lm_night_market,Night Market,Dining,Food court and shopping area,night_market,0.80
+lm_commonwealth,Commonwealth Hall,Residential,Traditional residential hall,commonwealth,0.60
+lm_legon,Legon Hall,Residential,Traditional residential hall,legon,0.60
+lm_sports,Sports Complex,Recreation,Main sports and recreation facilities,sports,0.70
+lm_bank,GCB Bank,Service,Ghana Commercial Bank branch,bank,0.50
+lm_medical,Medical Center,Service,University health services,medical,0.70
