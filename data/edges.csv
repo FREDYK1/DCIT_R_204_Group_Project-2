@@ -1,0 +1,10 @@
+sourceId,destinationId,distanceMeters,pathType,speedKmh,bidirectional
+main_gate,great_hall,300.0,walkway,0.0,true
+great_hall,library,200.0,walkway,0.0,true
+library,comp_sci,150.0,walkway,0.0,true
+main_gate,night_market,250.0,walkway,0.0,true
+night_market,great_hall,200.0,walkway,0.0,true
+great_hall,commonwealth,400.0,walkway,0.0,true
+commonwealth,legon,100.0,walkway,0.0,true
+legon,sports,200.0,walkway,0.0,true
+comp_sci,sports,300.0,walkway,0.0,true

@@ -16,10 +16,10 @@ public class RouteService {
     private TrafficService trafficService;
     
     public RouteService() {
-        this.campusGraph = new Graph();
+    this.campusGraph = new Graph();
         this.landmarkService = new LandmarkService();
         this.trafficService = new TrafficService();
-        initializeCampusData();
+    initializeCampusData();
     }
     
     /**
@@ -284,8 +284,18 @@ public class RouteService {
     }
     
     private void initializeCampusData() {
-        // Initialize with sample UG campus data
-        // This would typically load from a data file
+        // Prefer loading from CSVs created from your Google Maps sketch
+        if (main.utils.DataLoader.dataFilesExist()) {
+            try {
+                this.campusGraph = main.utils.DataLoader.loadGraphFromCSVs(
+                        "campus_locations.csv", "edges.csv");
+                System.out.println("Loaded campus graph from CSVs: " + campusGraph);
+                return;
+            } catch (Exception e) {
+                System.err.println("Falling back to sample graph due to CSV load error: " + e.getMessage());
+            }
+        }
+        // Fallback: initialize with sample UG campus data
         createSampleCampusGraph();
     }
     

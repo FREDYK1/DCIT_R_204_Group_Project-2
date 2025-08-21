@@ -2,7 +2,6 @@ package main.gui;
 
 import main.models.*;
 import main.services.RouteService;
-import main.utils.TimeCalculator;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -127,14 +126,14 @@ public class MainFrame extends JFrame {
         resultArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
         resultArea.setEditable(false);
         resultArea.setBackground(Color.WHITE);
-        resultArea.setText("Welcome to UG Navigate!\n\n" +
+    resultArea.setText("Welcome to UG Navigate!\n\n" +
                           "Select your starting point and destination, then click 'Find Route' to get directions.\n\n" +
                           "Features:\n" +
                           "• Multiple pathfinding algorithms (Dijkstra, A*, Floyd-Warshall)\n" +
                           "• Landmark-based route search\n" +
                           "• Multiple route options\n" +
-                          "• Real-time traffic consideration\n" +
-                          "• Distance and time estimates\n\n" +
+              "• Real-time traffic consideration\n" +
+              "• Distance estimates\n\n" +
                           "Ready to navigate the UG campus!");
         
         JScrollPane scrollPane = new JScrollPane(resultArea);
@@ -240,7 +239,6 @@ public class MainFrame extends JFrame {
             Route route = routes.get(i);
             resultArea.append(String.format("OPTION %d: %s\n", i + 1, route.getRouteName()));
             resultArea.append(String.format("Distance: %.0f meters\n", route.getTotalDistance()));
-            resultArea.append(String.format("Time: %s\n", TimeCalculator.formatTime(route.getTotalTravelTime())));
             
             if (!route.getLandmarksOnRoute().isEmpty()) {
                 resultArea.append("Landmarks: ");

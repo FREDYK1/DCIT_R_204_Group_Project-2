@@ -115,8 +115,7 @@ public class Route {
         StringBuilder description = new StringBuilder();
         description.append(String.format("Route: %s → %s\n", 
                                         getStart().getName(), getEnd().getName()));
-        description.append(String.format("Distance: %.1f meters\n", totalDistance));
-        description.append(String.format("Estimated Time: %d minutes\n", totalTravelTime));
+    description.append(String.format("Distance: %.1f meters\n", totalDistance));
         
         if (!landmarksOnRoute.isEmpty()) {
             description.append("Landmarks: ");
@@ -145,10 +144,9 @@ public class Route {
         
         for (int i = 0; i < edges.size(); i++) {
             Edge edge = edges.get(i);
-            directions.add(String.format("%d. Walk %.0fm to %s (%d min)", 
+            directions.add(String.format("%d. Go %.0fm to %s", 
                                        i + 1, edge.getDistance(), 
-                                       edge.getDestination().getName(), 
-                                       edge.getTravelTime()));
+                                       edge.getDestination().getName()));
         }
         
         directions.add(String.format("Arrive at %s", getEnd().getName()));
@@ -180,8 +178,8 @@ public class Route {
     
     @Override
     public String toString() {
-        return String.format("Route{%s, %.1fm, %dmin, landmarks=%d}", 
-                           routeName != null ? routeName : "Unnamed", 
-                           totalDistance, totalTravelTime, landmarksOnRoute.size());
+    return String.format("Route{%s, %.1fm, landmarks=%d}", 
+               routeName != null ? routeName : "Unnamed", 
+               totalDistance, landmarksOnRoute.size());
     }
 }

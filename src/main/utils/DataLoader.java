@@ -207,9 +207,156 @@ public class DataLoader {
         // Save to CSV files
         saveLocationsToCSV(sampleLocations, "campus_locations.csv");
         saveLandmarksToCSV(sampleLandmarks, "landmarks.csv");
+
+        // Create sample edges file based on the same sample graph used in RouteService
+        List<Edge> sampleEdges = new ArrayList<>();
+        // Safe lookup helper
+        java.util.function.Function<String, Node> N = id -> nodeMap.get(id);
+        // Add sample edges (sourceId, destinationId, distanceMeters, pathType, speedKmh, bidirectional)
+        if (N.apply("main_gate") != null && N.apply("great_hall") != null)
+            sampleEdges.add(new Edge(N.apply("main_gate"), N.apply("great_hall"), 300, 300, "walkway"));
+        if (N.apply("great_hall") != null && N.apply("library") != null)
+            sampleEdges.add(new Edge(N.apply("great_hall"), N.apply("library"), 200, 200, "walkway"));
+        if (N.apply("library") != null && N.apply("comp_sci") != null)
+            sampleEdges.add(new Edge(N.apply("library"), N.apply("comp_sci"), 150, 150, "walkway"));
+        if (N.apply("main_gate") != null && N.apply("night_market") != null)
+            sampleEdges.add(new Edge(N.apply("main_gate"), N.apply("night_market"), 250, 250, "walkway"));
+        if (N.apply("night_market") != null && N.apply("great_hall") != null)
+            sampleEdges.add(new Edge(N.apply("night_market"), N.apply("great_hall"), 200, 200, "walkway"));
+        if (N.apply("great_hall") != null && N.apply("commonwealth") != null)
+            sampleEdges.add(new Edge(N.apply("great_hall"), N.apply("commonwealth"), 400, 400, "walkway"));
+        if (N.apply("commonwealth") != null && N.apply("legon") != null)
+            sampleEdges.add(new Edge(N.apply("commonwealth"), N.apply("legon"), 100, 100, "walkway"));
+        if (N.apply("legon") != null && N.apply("sports") != null)
+            sampleEdges.add(new Edge(N.apply("legon"), N.apply("sports"), 200, 200, "walkway"));
+        if (N.apply("comp_sci") != null && N.apply("sports") != null)
+            sampleEdges.add(new Edge(N.apply("comp_sci"), N.apply("sports"), 300, 300, "walkway"));
+
+        saveEdgesToCSV(sampleEdges, "edges.csv");
         
         // Create sample traffic patterns file
         createSampleTrafficPatternsFile();
+    }
+
+    /**
+     * Load edges from CSV file
+     * Format (header): sourceId,destinationId,distanceMeters,pathType,speedKmh,bidirectional
+     */
+    public static List<Edge> loadEdgesFromCSV(String filename, Map<String, Node> nodeMap) {
+        List<Edge> edges = new ArrayList<>();
+        File file = new File(DATA_DIR + filename);
+
+        if (!file.exists()) {
+            System.out.println("File not found: " + filename + ", using sample edges if available");
+            return edges; // return empty; caller can fall back
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            boolean firstLine = true;
+            while ((line = br.readLine()) != null) {
+                if (firstLine) { firstLine = false; continue; }
+                if (line.trim().isEmpty()) continue;
+
+                String[] parts = line.split(",");
+                if (parts.length < 2) continue;
+
+                String srcId = parts[0].trim();
+                String dstId = parts[1].trim();
+                Node src = nodeMap.get(srcId);
+                Node dst = nodeMap.get(dstId);
+                if (src == null || dst == null) continue;
+
+                Double distance = null;
+                String pathType = "walkway";
+                Double speedKmh = null; // optional
+                boolean bidirectional = true;
+
+                if (parts.length >= 3 && !parts[2].trim().isEmpty()) {
+                    try { distance = Double.parseDouble(parts[2].trim()); } catch (NumberFormatException ignore) {}
+                }
+                if (parts.length >= 4 && !parts[3].trim().isEmpty()) {
+                    pathType = parts[3].trim();
+                }
+                if (parts.length >= 5 && !parts[4].trim().isEmpty()) {
+                    try { speedKmh = Double.parseDouble(parts[4].trim()); } catch (NumberFormatException ignore) {}
+                }
+                if (parts.length >= 6 && !parts[5].trim().isEmpty()) {
+                    bidirectional = Boolean.parseBoolean(parts[5].trim());
+                }
+
+                // Compute distance if not provided
+                double distMeters = (distance != null) ? distance :
+                        DistanceCalculator.calculateHaversineDistance(src, dst);
+
+                // Build edge with pathType first so default speed is interpreted correctly
+                double weight = distMeters; // default weight: distance
+                Edge edge = new Edge(src, dst, distMeters, weight, pathType);
+                if (speedKmh != null && speedKmh > 0) {
+                    edge.setSpeedKmh(speedKmh);
+                    // If user set speed, weight by minutes to optimize for time
+                    double hours = distMeters / 1000.0 / speedKmh;
+                    double minutes = hours * 60.0;
+                    edge.setWeight(minutes);
+                }
+                edges.add(edge);
+
+                if (bidirectional) {
+                    edges.add(edge.getReverse());
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading edges file: " + e.getMessage());
+        }
+
+        return edges;
+    }
+
+    /**
+     * Save edges to CSV file
+     */
+    public static void saveEdgesToCSV(List<Edge> edges, String filename) {
+        File dataDir = new File(DATA_DIR);
+        if (!dataDir.exists()) {
+            dataDir.mkdirs();
+        }
+
+        try (PrintWriter pw = new PrintWriter(new FileWriter(DATA_DIR + filename))) {
+            // header
+            pw.println("sourceId,destinationId,distanceMeters,pathType,speedKmh,bidirectional");
+            for (Edge e : edges) {
+                pw.printf("%s,%s,%.1f,%s,%.1f,%b%n",
+                        e.getSource().getId(),
+                        e.getDestination().getId(),
+                        e.getDistance(),
+                        e.getPathType() != null ? e.getPathType() : "walkway",
+                        0.0, // unknown speed by default
+                        true);
+            }
+            System.out.println("Edges saved to " + filename);
+        } catch (IOException e) {
+            System.err.println("Error saving edges: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Build a Graph from location and edge CSVs
+     */
+    public static Graph loadGraphFromCSVs(String locationsFile, String edgesFile) {
+        List<Node> locations = loadLocationsFromCSV(locationsFile);
+        Map<String, Node> nodeMap = new HashMap<>();
+        for (Node n : locations) nodeMap.put(n.getId(), n);
+
+        Graph graph = new Graph();
+        for (Node n : locations) graph.addNode(n);
+
+        List<Edge> edges = loadEdgesFromCSV(edgesFile, nodeMap);
+        for (Edge e : edges) {
+            // loadEdgesFromCSV already duplicates reverse edges when bidirectional
+            graph.addEdge(e, false);
+        }
+
+        return graph;
     }
     
     /**
